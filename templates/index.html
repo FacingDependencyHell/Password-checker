@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Password Security Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .input-section {
+            padding: 30px;
+        }
+
+        .password-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .password-input:focus {
+            border-color: #667eea;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .analysis-status {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .results {
+            padding: 30px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .final-result {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .breach-time {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .breach-instant { color: #8B0000; } /* Dark red for instant to 24 hours */
+        .breach-short { color: #FF8C00; }   /* Orange for 24 hours to 365 days */
+        .breach-medium { color: #FFD700; }  /* Yellow for 365 days to 10 years */
+        .breach-long { color: #228B22; }    /* Green for 10+ years */
+
+        .security-level {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .security-very-poor { color: #e74c3c; }
+        .security-poor { color: #e67e22; }
+        .security-fair { color: #f39c12; }
+        .security-good { color: #2ecc71; }
+        .security-excellent { color: #27ae60; }
+
+        .breach-explanation {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .step-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .step-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .step-result {
+            margin-bottom: 15px;
+        }
+
+        .result-good {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .result-bad {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+
+        .result-warning {
+            color: #f39c12;
+            font-weight: 500;
+        }
+
+        .character-groups {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .group-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .repeating-sequence {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .recommendations {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .recommendations h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            background: #e8f5e8;
+            border-left: 4px solid #27ae60;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #fcc;
+        }
+
+        @media (max-width: 768px) {
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+
+            .character-groups {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Password Security Checker</h1>
+            <p>3-step password analysis with intelligent resource management</p>
+        </div>
+
+        <div class="input-section">
+            <div class="password-input-container">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Start typing your password to analyze..."
+                    autocomplete="off"
+                >
+                <button type="button" class="toggle-password" id="togglePassword">
+                    👁️ Show
+                </button>
+            </div>
+            
+            <div class="analysis-status" id="analysisStatus">
+                💡 Analysis will start 1 second after you stop typing
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <div id="loading" class="loading" style="display: none;">
+                <p>🔍 Analyzing your password...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;"></div>
+
+            <div id="analysisResults" style="display: none;">
+                <div class="final-result">
+                    <div class="breach-time" id="breachTime"></div>
+                    <div class="security-level" id="securityLevel"></div>
+                    <div class="breach-explanation" id="breachExplanation"></div>
+                </div>
+
+                <div class="steps-container">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            Common Password Check
+                        </div>
+                        <div id="step1Result"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            Complexity Analysis
+                        </div>
+                        <div id="step2Result"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            Repeating Sequences
+                        </div>
+                        <div id="step3Result"></div>
+                    </div>
+                </div>
+
+                <div class="recommendations">
+                    <h3>💡 Recommendations</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PasswordChecker {
+            constructor() {
+                this.passwordInput = document.getElementById('passwordInput');
+                this.togglePassword = document.getElementById('togglePassword');
+                this.analysisStatus = document.getElementById('analysisStatus');
+                this.results = document.getElementById('results');
+                this.loading = document.getElementById('loading');
+                this.error = document.getElementById('error');
+                this.analysisResults = document.getElementById('analysisResults');
+                
+                this.debounceTimer = null;
+                this.isAnalyzing = false;
+                this.initEventListeners();
+            }
+
+            initEventListeners() {
+                this.togglePassword.addEventListener('click', () => this.togglePasswordVisibility());
+                this.passwordInput.addEventListener('input', () => this.onPasswordInput());
+            }
+
+            togglePasswordVisibility() {
+                const isPassword = this.passwordInput.type === 'password';
+                this.passwordInput.type = isPassword ? 'text' : 'password';
+                this.togglePassword.textContent = isPassword ? '🙈 Hide' : '👁️ Show';
+            }
+
+            onPasswordInput() {
+                // Clear previous timer
+                if (this.debounceTimer) {
+                    clearTimeout(this.debounceTimer);
+                }
+                
+                // If password is empty, hide results
+                if (this.passwordInput.value.trim().length === 0) {
+                    this.results.style.display = 'none';
+                    this.analysisStatus.textContent = '💡 Analysis will start 1 second after you stop typing';
+                    return;
+                }
+                
+                // Show countdown status
+                this.analysisStatus.textContent = '⏱️ Waiting for you to finish typing...';
+                
+                // Set 1000ms (1 second) debounce timer
+                this.debounceTimer = setTimeout(() => {
+                    this.analyzePassword();
+                }, 1000);
+            }
+
+            async analyzePassword() {
+                const password = this.passwordInput.value;
+                
+                if (!password.trim()) {
+                    this.results.style.display = 'none';
+                    return;
+                }
+
+                this.showLoading();
+
+                try {
+                    const response = await fetch('/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ password: password })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const analysis = await response.json();
+                    
+                    if (analysis.error) {
+                        throw new Error(analysis.error);
+                    }
+
+                    this.displayResults(analysis);
+                } catch (error) {
+                    this.showError(`Analysis failed: ${error.message}`);
+                }
+            }
+
+            showLoading() {
+                this.analysisStatus.textContent = '🔍 Running 3-step analysis...';
+                this.results.style.display = 'block';
+                this.loading.style.display = 'block';
+                this.error.style.display = 'none';
+                this.analysisResults.style.display = 'none';
+                this.isAnalyzing = true;
+            }
+
+            showError(message) {
+                this.analysisStatus.textContent = '❌ Analysis failed';
+                this.results.style.display = 'block';
+                this.loading.style.display = 'none';
+                this.error.style.display = 'block';
+                this.error.textContent = message;
+                this.analysisResults.style.display = 'none';
+                this.isAnalyzing = false;
+            }
+
+            displayResults(analysis) {
+                this.analysisStatus.textContent = '✅ Analysis complete';
+                this.results.style.display = 'block';
+                this.loading.style.display = 'none';
+                this.error.style.display = 'none';
+                this.analysisResults.style.display = 'block';
+                this.isAnalyzing = false;
+
+                this.updateFinalResult(analysis.final_assessment);
+                this.updateStep1(analysis.step1_common_check);
+                this.updateStep2(analysis.step2_complexity_analysis);
+                this.updateStep3(analysis.step3_repeating_sequences);
+                this.updateRecommendations(analysis.final_assessment.recommendations);
+            }
+
+            updateFinalResult(finalAssessment) {
+                const securityLevel = document.getElementById('securityLevel');
+                const breachTime = document.getElementById('breachTime');
+                const breachExplanation = document.getElementById('breachExplanation');
+
+                // Update breach time with color coding
+                breachTime.textContent = `Time to breach: ${finalAssessment.breach_time}`;
+                breachTime.className = `breach-time ${this.getBreachTimeColorClass(finalAssessment.breach_time)}`;
+
+                // Update security level
+                securityLevel.textContent = `Security Level: ${finalAssessment.security_level}`;
+                securityLevel.className = `security-level security-${finalAssessment.security_level.toLowerCase().replace(' ', '-')}`;
+
+                breachExplanation.textContent = finalAssessment.breach_explanation;
+            }
+
+            getBreachTimeColorClass(breachTime) {
+                // Convert breach time to seconds for comparison
+                const timeStr = breachTime.toLowerCase();
+                
+                if (timeStr.includes('instant') || timeStr.includes('second') || timeStr.includes('minute')) {
+                    return 'breach-instant'; // Dark red for instant to < 24 hours
+                } else if (timeStr.includes('hour')) {
+                    // Check if it's less than 24 hours
+                    const hours = parseFloat(timeStr.match(/(\d+\.?\d*)\s*hour/)?.[1] || 0);
+                    return hours < 24 ? 'breach-instant' : 'breach-short';
+                } else if (timeStr.includes('day')) {
+                    // Check if it's less than 365 days
+                    const days = parseFloat(timeStr.match(/(\d+\.?\d*)\s*day/)?.[1] || 0);
+                    return days < 365 ? 'breach-short' : 'breach-medium'; // Orange for 24 hours to 365 days
+                } else if (timeStr.includes('year')) {
+                    // Check if it's less than 10 years
+                    const years = parseFloat(timeStr.match(/(\d+\.?\d*)\s*year/)?.[1] || 0);
+                    if (years < 10) {
+                        return 'breach-medium'; // Yellow for 365 days to 10 years
+                    } else {
+                        return 'breach-long'; // Green for 10+ years
+                    }
+                } else if (timeStr.includes('billion')) {
+                    return 'breach-long'; // Green for very long times
+                }
+                
+                return 'breach-instant'; // Default to dark red
+            }
+
+            updateStep1(step1) {
+                const step1Result = document.getElementById('step1Result');
+                
+                if (step1.is_common) {
+                    step1Result.innerHTML = `
+                        <div class="step-result result-bad">
+                            ❌ ${step1.result}
+                        </div>
+                        <div style="font-size: 0.9em; color: #666;">
+                            This password was found in our database of common passwords.
+                        </div>
+                    `;
+                } else {
+                    step1Result.innerHTML = `
+                        <div class="step-result result-good">
+                            ✅ ${step1.result}
+                        </div>
+                        <div style="font-size: 0.9em; color: #666;">
+                            This password is not in our common passwords database.
+                        </div>
+                    `;
+                }
+            }
+
+            updateStep2(step2) {
+                const step2Result = document.getElementById('step2Result');
+                
+                let resultClass = step2.has_all_groups ? 'result-good' : 'result-warning';
+                let resultIcon = step2.has_all_groups ? '✅' : '⚠️';
+                
+                let html = `
+                    <div class="step-result ${resultClass}">
+                        ${resultIcon} Using ${step2.groups_used}/4 character groups
+                    </div>
+                    <div class="character-groups">
+                        <div class="group-item">
+                            <span>Lowercase (a-z):</span>
+                            <span>${step2.character_groups.lowercase ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="group-item">
+                            <span>Uppercase (A-Z):</span>
+                            <span>${step2.character_groups.uppercase ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="group-item">
+                            <span>Numbers (0-9):</span>
+                            <span>${step2.character_groups.digits ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="group-item">
+                            <span>Special chars:</span>
+                            <span>${step2.character_groups.special ? '✅' : '❌'}</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                        <strong>Character space:</strong> ${step2.character_space}<br>
+                        <strong>Possible combinations:</strong><br>
+                        <div style="word-wrap: break-word; line-height: 1.4; margin-top: 5px;">
+                            ${step2.combinations_formatted}
+                        </div>
+                    </div>
+                `;
+                
+                step2Result.innerHTML = html;
+            }
+
+            updateStep3(step3) {
+                const step3Result = document.getElementById('step3Result');
+                
+                if (step3.has_repeating_sequences) {
+                    let sequencesHtml = step3.repeating_sequences.map(seq => 
+                        `<div class="repeating-sequence">
+                            Character '${seq.character}' repeated ${seq.length} times
+                        </div>`
+                    ).join('');
+                    
+                    step3Result.innerHTML = `
+                        <div class="step-result result-warning">
+                            ⚠️ Found ${step3.repeating_sequences.length} repeating sequence(s)
+                        </div>
+                        ${sequencesHtml}
+                        <div style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                            Effective length: ${step3.compressed_length} characters (reduced from ${step3.original_length})
+                        </div>
+                    `;
+                } else {
+                    step3Result.innerHTML = `
+                        <div class="step-result result-good">
+                            ✅ No repeating sequences found
+                        </div>
+                        <div style="font-size: 0.9em; color: #666;">
+                            Your password doesn't contain long sequences of repeated characters.
+                        </div>
+                    `;
+                }
+            }
+
+            updateRecommendations(recommendations) {
+                const recommendationsList = document.getElementById('recommendationsList');
+                
+                recommendationsList.innerHTML = recommendations
+                    .map(rec => `<li>${rec}</li>`)
+                    .join('');
+            }
+
+            formatNumber(num) {
+                if (num === 0) return "0";
+                if (num < 1000) return num.toString();
+                if (num < 1000000) return (num/1000).toFixed(1) + "K";
+                if (num < 1000000000) return (num/1000000).toFixed(1) + "M";
+                if (num < 1000000000000) return (num/1000000000).toFixed(1) + "B";
+                return num.toExponential(2);
+            }
+        }
+
+        // Initialize the password checker when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            new PasswordChecker();
+        });
+    </script>
+</body>
+</html>
