@@ -4,7 +4,7 @@ import math
 import hashlib
 from typing import Dict, List, Tuple
 import os
-
+# Updated: 2025-07-08 - Force rebuild
 app = Flask(__name__)
 
 class PasswordAnalyzer:
