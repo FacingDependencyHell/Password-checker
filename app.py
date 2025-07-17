@@ -4,7 +4,7 @@ import math
 import hashlib
 from typing import Dict, List, Tuple
 import os
-# Updated: 2025-07-08 - Force rebuild
+
 app = Flask(__name__)
 
 class PasswordAnalyzer:
@@ -234,69 +234,116 @@ class PasswordAnalyzer:
     
     def format_years_with_cosmic_context(self, years: float) -> str:
         """Format years with cosmic comparisons for perspective"""
-        sun_lifespan = 6_000_000_000  # 6 billion years
-        universe_age = 13_800_000_000  # 13.8 billion years
-        atoms_on_earth_years = 1.33e50  # Reference point for atoms on Earth comparison
+        # Scientific reference points
+        sun_no_life_on_earth = 1_000_000_000  # 1 billion years - Sun too hot for Earth life
+        universe_age = 13_800_000_000  # 13.8 billion years - Since Big Bang
+        heat_death_universe = 10**100  # 10^100 years - Heat death of universe
         
-        if years < 1_000:
-            return f"{years:.1f} years"
-        elif years < 1_000_000:
-            return f"{years/1_000:.1f} thousand years"
-        elif years < 1_000_000_000:
-            return f"{years/1_000_000:.1f} million years"
-        elif years < sun_lifespan:
-            return f"{years/1_000_000_000:.1f} billion years"
-        elif years < universe_age:
-            sun_ratio = years / sun_lifespan
-            return f"{years/1_000_000_000:.1f} billion years (⭐ {sun_ratio:.1f} times longer than our sun will exist)"
-        elif years < 1_000_000_000_000:  # Less than 1 trillion
-            universe_ratio = years / universe_age
-            return f"{years/1_000_000_000:.1f} billion years (🌌 {universe_ratio:.1f} times since the Big Bang)"
-        elif years < 1_000_000_000_000_000:  # Less than 1 quadrillion
-            return f"{years/1_000_000_000_000:.1f} trillion years (🌌 {years/universe_age:.0f} times since the Big Bang)"
-        elif years < 1_000_000_000_000_000_000:  # Less than 1 quintillion
-            return f"{years/1_000_000_000_000_000:.1f} quadrillion years (🌌 {years/universe_age:.0f} times since the Big Bang)"
-        elif years < atoms_on_earth_years:
-            return f"{years/1_000_000_000_000_000_000:.1f} quintillion years (🌌 {years/universe_age:.0f} times since the Big Bang)"
-        else:
-            atoms_ratio = years / atoms_on_earth_years
-            if atoms_ratio < 1000:
-                return f"{years:.2e} years (🌍 {atoms_ratio:.1f} times more years than atoms on Earth)"
+        # Apply the trillion-year threshold
+        if years > 1_000_000_000_000:  # More than 1 trillion years
+            if years < sun_no_life_on_earth:
+                return f"{years/1_000_000:.1f} million years"
+            elif years < universe_age:
+                return f"{years/1_000_000_000:.1f} billion years"
+            elif years < sun_no_life_on_earth * 6:
+                sun_ratio = years / sun_no_life_on_earth
+                return f"{years/1_000_000_000:.1f} billion years (⭐ {sun_ratio:.1f}x longer than the Sun can sustain life on Earth)"
+            elif years < universe_age * 100:
+                universe_ratio = years / universe_age
+                return f"{years/1_000_000_000:.1f} billion years (🌌 {universe_ratio:.1f}x since the Big Bang)"
+            elif years < heat_death_universe:
+                universe_ratio = years / universe_age
+                if universe_ratio < 1000:
+                    return f"{years/1_000_000_000_000:.1f} trillion years (🌌 {universe_ratio:.0f}x since the Big Bang)"
+                elif universe_ratio < 1000000:
+                    return f"{years/1_000_000_000_000:.1f} trillion years (🌌 {universe_ratio/1000:.0f} thousand times since the Big Bang)"
+                elif universe_ratio < 1000000000:
+                    return f"{years/1_000_000_000_000_000:.1f} quadrillion years (🌌 {universe_ratio/1000000:.0f} million times since the Big Bang)"
+                else:
+                    return f"{years/1_000_000_000_000_000_000:.1f} quintillion years (🌌 {universe_ratio/1000000000:.0f} billion times since the Big Bang)"
             else:
-                return f"{years:.2e} years (🌍 {atoms_ratio:.2e} times more years than atoms on Earth)"
+                heat_death_ratio = years / heat_death_universe
+                if heat_death_ratio < 1000:
+                    return f"Unimaginably long (🔥 {heat_death_ratio:.0f}x longer than the heat death of the universe)"
+                else:
+                    return f"Unimaginably long (🔥 {heat_death_ratio/1000:.0f} thousand times longer than the heat death of the universe)"
+        else:
+            # Normal scale for under 1 trillion years
+            if years < 1_000:
+                return f"{years:.1f} years"
+            elif years < 1_000_000:
+                return f"{years/1_000:.1f} thousand years"
+            elif years < 1_000_000_000:
+                return f"{years/1_000_000:.1f} million years"
+            else:
+                return f"{years/1_000_000_000:.1f} billion years"
     
     def format_combinations_with_comparisons(self, combinations: int) -> str:
         """Format combinations with real-world comparisons"""
+        # Scientific reference points
         grains_of_sand = 7.5e18  # 7.5 quintillion grains of sand on Earth
-        atoms_on_earth = 1.33e50  # Atoms on Earth
-        atoms_in_universe = 1e82   # Atoms in observable universe
+        atoms_on_earth = 1.33e50  # 1.33 × 10^50 atoms on Earth
+        atoms_in_sun = 1.2e57  # 1.2 × 10^57 atoms in the Sun
+        atoms_in_solar_system = 1.2e57  # Approximately same as Sun (dominates)
+        atoms_in_milky_way = 2.4e67  # 2.4 × 10^67 atoms in Milky Way
+        atoms_in_universe = 1e82  # 1 × 10^82 atoms in observable universe
         
-        if combinations < 1_000:
-            return str(int(combinations))
-        elif combinations < 1_000_000:
-            return f"{combinations/1_000:.1f} thousand"
-        elif combinations < 1_000_000_000:
-            return f"{combinations/1_000_000:.1f} million"
-        elif combinations < 1_000_000_000_000:
-            return f"{combinations/1_000_000_000:.1f} billion"
-        elif combinations < 1_000_000_000_000_000:
-            return f"{combinations/1_000_000_000_000:.1f} trillion"
-        elif combinations < 1_000_000_000_000_000_000:
-            return f"{combinations/1_000_000_000_000_000:.1f} quadrillion"
-        elif combinations < grains_of_sand:
-            return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion"
-        elif combinations < grains_of_sand * 10:
-            sand_ratio = combinations / grains_of_sand
-            return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion (🏖️ {sand_ratio:.1f} times more than grains of sand on Earth)"
-        elif combinations < atoms_on_earth:
-            sand_ratio = combinations / grains_of_sand
-            return f"{combinations:.2e} (🏖️ {sand_ratio:.0f} times more than grains of sand on Earth)"
-        elif combinations < atoms_in_universe:
-            atoms_ratio = combinations / atoms_on_earth
-            return f"{combinations:.2e} (🌍 {atoms_ratio:.2e} times more than atoms on Earth)"
+        # Apply the trillion threshold
+        if combinations > 1_000_000_000_000:  # More than 1 trillion combinations
+            if combinations < grains_of_sand:
+                return f"{combinations/1_000_000_000_000:.1f} trillion"
+            elif combinations < grains_of_sand * 10:
+                sand_ratio = combinations / grains_of_sand
+                return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion (🏖️ {sand_ratio:.1f}x more than grains of sand on Earth)"
+            elif combinations < atoms_on_earth:
+                sand_ratio = combinations / grains_of_sand
+                if sand_ratio < 1000:
+                    return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion (🏖️ {sand_ratio:.0f}x more than grains of sand on Earth)"
+                elif sand_ratio < 1000000:
+                    return f"Huge number (🏖️ {sand_ratio/1000:.0f} thousand times more than grains of sand on Earth)"
+                else:
+                    return f"Huge number (🏖️ {sand_ratio/1000000:.0f} million times more than grains of sand on Earth)"
+            elif combinations < atoms_in_sun:
+                earth_ratio = combinations / atoms_on_earth
+                if earth_ratio < 1000:
+                    return f"Astronomical number (🌍 {earth_ratio:.1f}x more than atoms on Earth)"
+                else:
+                    return f"Astronomical number (🌍 {earth_ratio/1000:.0f} thousand times more than atoms on Earth)"
+            elif combinations < atoms_in_solar_system * 10:
+                sun_ratio = combinations / atoms_in_sun
+                return f"Cosmic number (☀️ {sun_ratio:.1f}x more than atoms in the Sun)"
+            elif combinations < atoms_in_milky_way:
+                solar_ratio = combinations / atoms_in_solar_system
+                if solar_ratio < 1000:
+                    return f"Galactic number (🌌 {solar_ratio:.0f}x more than atoms in our Solar System)"
+                elif solar_ratio < 1000000:
+                    return f"Galactic number (🌌 {solar_ratio/1000:.0f} thousand times more than atoms in our Solar System)"
+                else:
+                    return f"Galactic number (🌌 {solar_ratio/1000000:.0f} million times more than atoms in our Solar System)"
+            elif combinations < atoms_in_universe:
+                milky_ratio = combinations / atoms_in_milky_way
+                if milky_ratio < 1000:
+                    return f"Universal number (🌌 {milky_ratio:.0f}x more than atoms in the Milky Way)"
+                elif milky_ratio < 1000000:
+                    return f"Universal number (🌌 {milky_ratio/1000:.0f} thousand times more than atoms in the Milky Way)"
+                else:
+                    return f"Universal number (🌌 {milky_ratio/1000000:.0f} million times more than atoms in the Milky Way)"
+            else:
+                universe_ratio = combinations / atoms_in_universe
+                if universe_ratio < 1000:
+                    return f"Beyond universal (🌌 {universe_ratio:.0f}x more than atoms in the observable universe)"
+                else:
+                    return f"Beyond universal (🌌 {universe_ratio/1000:.0f} thousand times more than atoms in the observable universe)"
         else:
-            universe_atoms_ratio = combinations / atoms_in_universe
-            return f"{combinations:.2e} (🌌 {universe_atoms_ratio:.2e} times more than atoms in the observable universe)"
+            # Normal scale for under 1 trillion combinations
+            if combinations < 1_000:
+                return str(int(combinations))
+            elif combinations < 1_000_000:
+                return f"{combinations/1_000:.1f} thousand"
+            elif combinations < 1_000_000_000:
+                return f"{combinations/1_000_000:.1f} million"
+            else:
+                return f"{combinations/1_000_000_000:.1f} billion"
 
 # Initialize the password analyzer
 analyzer = PasswordAnalyzer()
