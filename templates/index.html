@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Password Security Checker</title>
+    <title>Pokročilý Kontroler Bezpečnosti Hesel</title>
     <style>
         * {
             margin: 0;
@@ -108,10 +108,10 @@
             margin-bottom: 15px;
         }
 
-        .breach-instant { color: #8B0000; } /* Dark red for instant to 24 hours */
-        .breach-short { color: #FF8C00; }   /* Orange for 24 hours to 365 days */
-        .breach-medium { color: #FFD700; }  /* Yellow for 365 days to 10 years */
-        .breach-long { color: #228B22; }    /* Green for 10+ years */
+        .breach-instant { color: #8B0000; }
+        .breach-short { color: #FF8C00; }
+        .breach-medium { color: #FFD700; }
+        .breach-long { color: #228B22; }
 
         .security-level {
             font-size: 1.4em;
@@ -269,8 +269,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 Password Security Checker</h1>
-            <p>3-step password analysis with intelligent resource management</p>
+            <h1>🔐 Kontroler Bezpečnosti Hesel</h1>
+            <p>3-krokový rozbor hesla s inteligentním řízením zdrojů</p>
         </div>
 
         <div class="input-section">
@@ -279,22 +279,22 @@
                     type="password" 
                     id="passwordInput" 
                     class="password-input" 
-                    placeholder="Start typing your password to analyze..."
+                    placeholder="Začněte psát heslo pro analýzu..."
                     autocomplete="off"
                 >
                 <button type="button" class="toggle-password" id="togglePassword">
-                    👁️ Show
+                    👁️ Zobrazit
                 </button>
             </div>
             
             <div class="analysis-status" id="analysisStatus">
-                💡 Analysis will start 1 second after you stop typing
+                💡 Analýza začne 1 sekundu poté, co přestanete psát
             </div>
         </div>
 
         <div id="results" class="results">
             <div id="loading" class="loading" style="display: none;">
-                <p>🔍 Analyzing your password...</p>
+                <p>🔍 Analyzuji vaše heslo...</p>
             </div>
 
             <div id="error" class="error" style="display: none;"></div>
@@ -310,7 +310,7 @@
                     <div class="step-card">
                         <div class="step-header">
                             <div class="step-number">1</div>
-                            Common Password Check
+                            Kontrola běžných hesel
                         </div>
                         <div id="step1Result"></div>
                     </div>
@@ -318,7 +318,7 @@
                     <div class="step-card">
                         <div class="step-header">
                             <div class="step-number">2</div>
-                            Complexity Analysis
+                            Analýza složitosti
                         </div>
                         <div id="step2Result"></div>
                     </div>
@@ -326,14 +326,14 @@
                     <div class="step-card">
                         <div class="step-header">
                             <div class="step-number">3</div>
-                            Repeating Sequences
+                            Opakující se sekvence
                         </div>
                         <div id="step3Result"></div>
                     </div>
                 </div>
 
                 <div class="recommendations">
-                    <h3>💡 Recommendations</h3>
+                    <h3>💡 Doporučení</h3>
                     <ul id="recommendationsList"></ul>
                 </div>
             </div>
@@ -364,26 +364,22 @@
             togglePasswordVisibility() {
                 const isPassword = this.passwordInput.type === 'password';
                 this.passwordInput.type = isPassword ? 'text' : 'password';
-                this.togglePassword.textContent = isPassword ? '🙈 Hide' : '👁️ Show';
+                this.togglePassword.textContent = isPassword ? '🙈 Skrýt' : '👁️ Zobrazit';
             }
 
             onPasswordInput() {
-                // Clear previous timer
                 if (this.debounceTimer) {
                     clearTimeout(this.debounceTimer);
                 }
                 
-                // If password is empty, hide results
                 if (this.passwordInput.value.trim().length === 0) {
                     this.results.style.display = 'none';
-                    this.analysisStatus.textContent = '💡 Analysis will start 1 second after you stop typing';
+                    this.analysisStatus.textContent = '💡 Analýza začne 1 sekundu poté, co přestanete psát';
                     return;
                 }
                 
-                // Show countdown status
-                this.analysisStatus.textContent = '⏱️ Waiting for you to finish typing...';
+                this.analysisStatus.textContent = '⏱️ Čekám, až dokončíte psaní...';
                 
-                // Set 1000ms (1 second) debounce timer
                 this.debounceTimer = setTimeout(() => {
                     this.analyzePassword();
                 }, 1000);
@@ -409,7 +405,7 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`HTTP chyba! status: ${response.status}`);
                     }
 
                     const analysis = await response.json();
@@ -420,12 +416,12 @@
 
                     this.displayResults(analysis);
                 } catch (error) {
-                    this.showError(`Analysis failed: ${error.message}`);
+                    this.showError(`Analýza selhala: ${error.message}`);
                 }
             }
 
             showLoading() {
-                this.analysisStatus.textContent = '🔍 Running 3-step analysis...';
+                this.analysisStatus.textContent = '🔍 Probíhá 3-krokový rozbor...';
                 this.results.style.display = 'block';
                 this.loading.style.display = 'block';
                 this.error.style.display = 'none';
@@ -434,7 +430,7 @@
             }
 
             showError(message) {
-                this.analysisStatus.textContent = '❌ Analysis failed';
+                this.analysisStatus.textContent = '❌ Analýza selhala';
                 this.results.style.display = 'block';
                 this.loading.style.display = 'none';
                 this.error.style.display = 'block';
@@ -444,7 +440,7 @@
             }
 
             displayResults(analysis) {
-                this.analysisStatus.textContent = '✅ Analysis complete';
+                this.analysisStatus.textContent = '✅ Analýza dokončena';
                 this.results.style.display = 'block';
                 this.loading.style.display = 'none';
                 this.error.style.display = 'none';
@@ -463,44 +459,47 @@
                 const breachTime = document.getElementById('breachTime');
                 const breachExplanation = document.getElementById('breachExplanation');
 
-                // Update breach time with color coding
-                breachTime.textContent = `Time to breach: ${finalAssessment.breach_time}`;
+                breachTime.textContent = `Doba do prolomení: ${finalAssessment.breach_time}`;
                 breachTime.className = `breach-time ${this.getBreachTimeColorClass(finalAssessment.breach_time)}`;
 
-                // Update security level
-                securityLevel.textContent = `Security Level: ${finalAssessment.security_level}`;
+                const securityLevels = {
+                    'Very Poor': 'Velmi slabé',
+                    'Poor': 'Slabé',
+                    'Fair': 'Přijatelné',
+                    'Good': 'Dobré',
+                    'Excellent': 'Vynikající'
+                };
+                
+                const czechSecurityLevel = securityLevels[finalAssessment.security_level] || finalAssessment.security_level;
+                securityLevel.textContent = `Úroveň bezpečnosti: ${czechSecurityLevel}`;
                 securityLevel.className = `security-level security-${finalAssessment.security_level.toLowerCase().replace(' ', '-')}`;
 
                 breachExplanation.textContent = finalAssessment.breach_explanation;
             }
 
             getBreachTimeColorClass(breachTime) {
-                // Convert breach time to seconds for comparison
                 const timeStr = breachTime.toLowerCase();
                 
-                if (timeStr.includes('instant') || timeStr.includes('second') || timeStr.includes('minute')) {
-                    return 'breach-instant'; // Dark red for instant to < 24 hours
-                } else if (timeStr.includes('hour')) {
-                    // Check if it's less than 24 hours
-                    const hours = parseFloat(timeStr.match(/(\d+\.?\d*)\s*hour/)?.[1] || 0);
+                if (timeStr.includes('okamžitě') || timeStr.includes('instant') || timeStr.includes('sekund') || timeStr.includes('minut')) {
+                    return 'breach-instant';
+                } else if (timeStr.includes('hodin')) {
+                    const hours = parseFloat(timeStr.match(/(\d+\.?\d*)\s*hodin/)?.[1] || 0);
                     return hours < 24 ? 'breach-instant' : 'breach-short';
-                } else if (timeStr.includes('day')) {
-                    // Check if it's less than 365 days
-                    const days = parseFloat(timeStr.match(/(\d+\.?\d*)\s*day/)?.[1] || 0);
-                    return days < 365 ? 'breach-short' : 'breach-medium'; // Orange for 24 hours to 365 days
-                } else if (timeStr.includes('year')) {
-                    // Check if it's less than 10 years
-                    const years = parseFloat(timeStr.match(/(\d+\.?\d*)\s*year/)?.[1] || 0);
+                } else if (timeStr.includes('dn')) {
+                    const days = parseFloat(timeStr.match(/(\d+\.?\d*)\s*dn/)?.[1] || 0);
+                    return days < 365 ? 'breach-short' : 'breach-medium';
+                } else if (timeStr.includes('let') || timeStr.includes('rok')) {
+                    const years = parseFloat(timeStr.match(/(\d+\.?\d*)\s*(let|rok)/)?.[1] || 0);
                     if (years < 10) {
-                        return 'breach-medium'; // Yellow for 365 days to 10 years
+                        return 'breach-medium';
                     } else {
-                        return 'breach-long'; // Green for 10+ years
+                        return 'breach-long';
                     }
-                } else if (timeStr.includes('billion')) {
-                    return 'breach-long'; // Green for very long times
+                } else if (timeStr.includes('miliard') || timeStr.includes('nepředstavitelně')) {
+                    return 'breach-long';
                 }
                 
-                return 'breach-instant'; // Default to dark red
+                return 'breach-instant';
             }
 
             updateStep1(step1) {
@@ -509,19 +508,19 @@
                 if (step1.is_common) {
                     step1Result.innerHTML = `
                         <div class="step-result result-bad">
-                            ❌ ${step1.result}
+                            ❌ Okamžitě - Používáte známé heslo!
                         </div>
                         <div style="font-size: 0.9em; color: #666;">
-                            This password was found in our database of common passwords.
+                            Toto heslo bylo nalezeno v naší databázi běžných hesel.
                         </div>
                     `;
                 } else {
                     step1Result.innerHTML = `
                         <div class="step-result result-good">
-                            ✅ ${step1.result}
+                            ✅ Nenalezeno v běžných heslech
                         </div>
                         <div style="font-size: 0.9em; color: #666;">
-                            This password is not in our common passwords database.
+                            Toto heslo není v naší databázi běžných hesel.
                         </div>
                     `;
                 }
@@ -535,29 +534,29 @@
                 
                 let html = `
                     <div class="step-result ${resultClass}">
-                        ${resultIcon} Using ${step2.groups_used}/4 character groups
+                        ${resultIcon} Používá ${step2.groups_used}/4 skupin znaků
                     </div>
                     <div class="character-groups">
                         <div class="group-item">
-                            <span>Lowercase (a-z):</span>
+                            <span>Malá písmena (a-z):</span>
                             <span>${step2.character_groups.lowercase ? '✅' : '❌'}</span>
                         </div>
                         <div class="group-item">
-                            <span>Uppercase (A-Z):</span>
+                            <span>Velká písmena (A-Z):</span>
                             <span>${step2.character_groups.uppercase ? '✅' : '❌'}</span>
                         </div>
                         <div class="group-item">
-                            <span>Numbers (0-9):</span>
+                            <span>Čísla (0-9):</span>
                             <span>${step2.character_groups.digits ? '✅' : '❌'}</span>
                         </div>
                         <div class="group-item">
-                            <span>Special chars:</span>
+                            <span>Speciální znaky:</span>
                             <span>${step2.character_groups.special ? '✅' : '❌'}</span>
                         </div>
                     </div>
                     <div style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                        <strong>Character space:</strong> ${step2.character_space}<br>
-                        <strong>Possible combinations:</strong><br>
+                        <strong>Znaková sada:</strong> ${step2.character_space}<br>
+                        <strong>Možné kombinace:</strong><br>
                         <div style="word-wrap: break-word; line-height: 1.4; margin-top: 5px;">
                             ${step2.combinations_formatted}
                         </div>
@@ -573,26 +572,26 @@
                 if (step3.has_repeating_sequences) {
                     let sequencesHtml = step3.repeating_sequences.map(seq => 
                         `<div class="repeating-sequence">
-                            Character '${seq.character}' repeated ${seq.length} times
+                            Znak '${seq.character}' opakován ${seq.length}krát
                         </div>`
                     ).join('');
                     
                     step3Result.innerHTML = `
                         <div class="step-result result-warning">
-                            ⚠️ Found ${step3.repeating_sequences.length} repeating sequence(s)
+                            ⚠️ Nalezeno ${step3.repeating_sequences.length} opakujících se sekvencí
                         </div>
                         ${sequencesHtml}
                         <div style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                            Effective length: ${step3.compressed_length} characters (reduced from ${step3.original_length})
+                            Efektivní délka: ${step3.compressed_length} znaků (sníženo z ${step3.original_length})
                         </div>
                     `;
                 } else {
                     step3Result.innerHTML = `
                         <div class="step-result result-good">
-                            ✅ No repeating sequences found
+                            ✅ Žádné opakující se sekvence nenalezeny
                         </div>
                         <div style="font-size: 0.9em; color: #666;">
-                            Your password doesn't contain long sequences of repeated characters.
+                            Vaše heslo neobsahuje dlouhé sekvence opakujících se znaků.
                         </div>
                     `;
                 }
@@ -601,22 +600,26 @@
             updateRecommendations(recommendations) {
                 const recommendationsList = document.getElementById('recommendationsList');
                 
-                recommendationsList.innerHTML = recommendations
+                const czechRecommendations = recommendations.map(rec => {
+                    const translations = {
+                        'Add lowercase letters (a-z)': 'Přidejte malá písmena (a-z)',
+                        'Add uppercase letters (A-Z)': 'Přidejte velká písmena (A-Z)',
+                        'Add numbers (0-9)': 'Přidejte čísla (0-9)',
+                        'Add special characters (@#$%&-+*()[]{})': 'Přidejte speciální znaky (@#$%&-+*()[]{})',
+                        'Avoid common passwords': 'Vyhněte se běžným heslům',
+                        'Avoid repeating the same character multiple times in a row': 'Vyhněte se opakování stejného znaku několikrát za sebou',
+                        'Choose a unique password not found in common password lists': 'Vyberte si jedinečné heslo, které není v seznamech běžných hesel',
+                        'Your password looks strong!': 'Vaše heslo vypadá silně!'
+                    };
+                    return translations[rec] || rec;
+                });
+                
+                recommendationsList.innerHTML = czechRecommendations
                     .map(rec => `<li>${rec}</li>`)
                     .join('');
             }
-
-            formatNumber(num) {
-                if (num === 0) return "0";
-                if (num < 1000) return num.toString();
-                if (num < 1000000) return (num/1000).toFixed(1) + "K";
-                if (num < 1000000000) return (num/1000000).toFixed(1) + "M";
-                if (num < 1000000000000) return (num/1000000000).toFixed(1) + "B";
-                return num.toExponential(2);
-            }
         }
 
-        // Initialize the password checker when the page loads
         document.addEventListener('DOMContentLoaded', function() {
             new PasswordChecker();
         });

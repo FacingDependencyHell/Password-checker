@@ -26,10 +26,11 @@ class PasswordAnalyzer:
         """Create a sample common passwords file if it doesn't exist"""
         os.makedirs('data', exist_ok=True)
         sample_passwords = [
-            "password", "123456", "password123", "admin", "qwerty",
-            "letmein", "welcome", "monkey", "1234567890", "abc123",
-            "Password1", "123456789", "welcome123", "admin123", "qwerty123",
-            "password1", "123123", "111111", "1234567", "dragon"
+            "heslo", "123456", "heslo123", "admin", "qwerty",
+            "pustme", "vitejte", "opice", "1234567890", "abc123",
+            "Heslo1", "123456789", "vitejte123", "admin123", "qwerty123",
+            "heslo1", "123123", "111111", "1234567", "drak",
+            "password", "password123", "letmein", "welcome", "monkey"
         ]
         
         with open('data/common_passwords.txt', 'w', encoding='utf-8') as f:
@@ -41,7 +42,7 @@ class PasswordAnalyzer:
     def analyze_password(self, password: str) -> Dict:
         """Main password analysis function following the 3-step process"""
         if not password:
-            return {"error": "Password cannot be empty"}
+            return {"error": "Heslo nemůže být prázdné"}
         
         analysis = {
             "password": password,
@@ -62,7 +63,7 @@ class PasswordAnalyzer:
         
         return {
             "is_common": is_common,
-            "result": "Instant - You are using a well known password!" if is_common else "Not found in common passwords"
+            "result": "Okamžitě - Používáte známé heslo!" if is_common else "Nenalezeno v běžných heslech"
         }
     
     def step2_analyze_complexity(self, password: str) -> Dict:
@@ -100,13 +101,13 @@ class PasswordAnalyzer:
         # Generate recommendations if not all groups are used
         recommendations = []
         if not has_lower:
-            recommendations.append("Add lowercase letters (a-z)")
+            recommendations.append("Přidejte malá písmena (a-z)")
         if not has_upper:
-            recommendations.append("Add uppercase letters (A-Z)")
+            recommendations.append("Přidejte velká písmena (A-Z)")
         if not has_digits:
-            recommendations.append("Add numbers (0-9)")
+            recommendations.append("Přidejte čísla (0-9)")
         if not has_special:
-            recommendations.append("Add special characters (@#$%&-+*()[]{})")
+            recommendations.append("Přidejte speciální znaky (@#$%&-+*()[]{})")
         
         return {
             "character_groups": character_groups,
@@ -170,22 +171,22 @@ class PasswordAnalyzer:
         # If common password, that's the final result
         if step1["is_common"]:
             return {
-                "breach_time": "Instant",
-                "breach_explanation": "You are using a well known password!",
+                "breach_time": "Okamžitě",
+                "breach_explanation": "Používáte známé heslo!",
                 "security_level": "Very Poor",
-                "primary_issue": "Common password",
-                "recommendations": ["Choose a unique password not found in common password lists"]
+                "primary_issue": "Běžné heslo",
+                "recommendations": ["Vyberte si jedinečné heslo, které není v seznamech běžných hesel"]
             }
         
         # Determine which breach time to use
         if step3["has_repeating_sequences"] and step3["adjusted_analysis"]:
             breach_time = step3["adjusted_analysis"]["breach_time_human"]
             breach_seconds = step3["adjusted_analysis"]["breach_time_seconds"]
-            explanation = f"Adjusted for repeating sequences. Effective length: {step3['compressed_length']} characters"
+            explanation = f"Upraveno pro opakující se sekvence. Efektivní délka: {step3['compressed_length']} znaků"
         else:
             breach_time = step2["breach_time_human"]
             breach_seconds = step2["breach_time_seconds"]
-            explanation = "Based on full password complexity"
+            explanation = "Na základě plné složitosti hesla"
         
         # Determine security level based on breach time in seconds
         if breach_seconds < 1:
@@ -202,10 +203,10 @@ class PasswordAnalyzer:
         # Collect all recommendations
         recommendations = step2["recommendations"].copy() if step2["recommendations"] else []
         if step3["has_repeating_sequences"]:
-            recommendations.append("Avoid repeating the same character multiple times in a row")
+            recommendations.append("Vyhněte se opakování stejného znaku několikrát za sebou")
         
         if not recommendations:
-            recommendations = ["Your password looks strong!"]
+            recommendations = ["Vaše heslo vypadá silně!"]
         
         return {
             "breach_time": breach_time,
@@ -217,23 +218,23 @@ class PasswordAnalyzer:
         }
     
     def seconds_to_human_readable(self, seconds: float) -> str:
-        """Convert seconds to human readable format with cosmic comparisons"""
+        """Convert seconds to human readable format with cosmic comparisons in Czech"""
         if seconds < 1:
-            return "Less than 1 second"
+            return "Méně než 1 sekunda"
         elif seconds < 60:
-            return f"{seconds:.1f} seconds"
+            return f"{seconds:.1f} sekund"
         elif seconds < 3600:
-            return f"{seconds/60:.1f} minutes"
+            return f"{seconds/60:.1f} minut"
         elif seconds < 86400:
-            return f"{seconds/3600:.1f} hours"
+            return f"{seconds/3600:.1f} hodin"
         elif seconds < 31536000:
-            return f"{seconds/86400:.1f} days"
+            return f"{seconds/86400:.1f} dní"
         else:
             years = seconds / 31536000
             return self.format_years_with_cosmic_context(years)
     
     def format_years_with_cosmic_context(self, years: float) -> str:
-        """Format years with cosmic comparisons for perspective"""
+        """Format years with cosmic comparisons for perspective in Czech"""
         # Scientific reference points
         sun_no_life_on_earth = 1_000_000_000  # 1 billion years - Sun too hot for Earth life
         universe_age = 13_800_000_000  # 13.8 billion years - Since Big Bang
@@ -242,44 +243,44 @@ class PasswordAnalyzer:
         # Apply the trillion-year threshold
         if years > 1_000_000_000_000:  # More than 1 trillion years
             if years < sun_no_life_on_earth:
-                return f"{years/1_000_000:.1f} million years"
+                return f"{years/1_000_000:.1f} milionů let"
             elif years < universe_age:
-                return f"{years/1_000_000_000:.1f} billion years"
+                return f"{years/1_000_000_000:.1f} miliard let"
             elif years < sun_no_life_on_earth * 6:
                 sun_ratio = years / sun_no_life_on_earth
-                return f"{years/1_000_000_000:.1f} billion years (⭐ {sun_ratio:.1f}x longer than the Sun can sustain life on Earth)"
+                return f"{years/1_000_000_000:.1f} miliard let (⭐ {sun_ratio:.1f}x déle, než dokáže Slunce udržet život na Zemi)"
             elif years < universe_age * 100:
                 universe_ratio = years / universe_age
-                return f"{years/1_000_000_000:.1f} billion years (🌌 {universe_ratio:.1f}x since the Big Bang)"
+                return f"{years/1_000_000_000:.1f} miliard let (🌌 {universe_ratio:.1f}x déle než od Velkého třesku)"
             elif years < heat_death_universe:
                 universe_ratio = years / universe_age
                 if universe_ratio < 1000:
-                    return f"{years/1_000_000_000_000:.1f} trillion years (🌌 {universe_ratio:.0f}x since the Big Bang)"
+                    return f"{years/1_000_000_000_000:.1f} bilionů let (🌌 {universe_ratio:.0f}x déle než od Velkého třesku)"
                 elif universe_ratio < 1000000:
-                    return f"{years/1_000_000_000_000:.1f} trillion years (🌌 {universe_ratio/1000:.0f} thousand times since the Big Bang)"
+                    return f"{years/1_000_000_000_000:.1f} bilionů let (🌌 {universe_ratio/1000:.0f} tisíc krát déle než od Velkého třesku)"
                 elif universe_ratio < 1000000000:
-                    return f"{years/1_000_000_000_000_000:.1f} quadrillion years (🌌 {universe_ratio/1000000:.0f} million times since the Big Bang)"
+                    return f"{years/1_000_000_000_000_000:.1f} biliard let (🌌 {universe_ratio/1000000:.0f} milionů krát déle než od Velkého třesku)"
                 else:
-                    return f"{years/1_000_000_000_000_000_000:.1f} quintillion years (🌌 {universe_ratio/1000000000:.0f} billion times since the Big Bang)"
+                    return f"{years/1_000_000_000_000_000_000:.1f} trilionů let (🌌 {universe_ratio/1000000000:.0f} miliard krát déle než od Velkého třesku)"
             else:
                 heat_death_ratio = years / heat_death_universe
                 if heat_death_ratio < 1000:
-                    return f"Unimaginably long (🔥 {heat_death_ratio:.0f}x longer than the heat death of the universe)"
+                    return f"Nepředstavitelně dlouho (🔥 {heat_death_ratio:.0f}x déle než tepelná smrt vesmíru)"
                 else:
-                    return f"Unimaginably long (🔥 {heat_death_ratio/1000:.0f} thousand times longer than the heat death of the universe)"
+                    return f"Nepředstavitelně dlouho (🔥 {heat_death_ratio/1000:.0f} tisíc krát déle než tepelná smrt vesmíru)"
         else:
             # Normal scale for under 1 trillion years
             if years < 1_000:
-                return f"{years:.1f} years"
+                return f"{years:.1f} let"
             elif years < 1_000_000:
-                return f"{years/1_000:.1f} thousand years"
+                return f"{years/1_000:.1f} tisíc let"
             elif years < 1_000_000_000:
-                return f"{years/1_000_000:.1f} million years"
+                return f"{years/1_000_000:.1f} milionů let"
             else:
-                return f"{years/1_000_000_000:.1f} billion years"
+                return f"{years/1_000_000_000:.1f} miliard let"
     
     def format_combinations_with_comparisons(self, combinations: int) -> str:
-        """Format combinations with real-world comparisons"""
+        """Format combinations with real-world comparisons in Czech"""
         # Scientific reference points
         grains_of_sand = 7.5e18  # 7.5 quintillion grains of sand on Earth
         atoms_on_earth = 1.33e50  # 1.33 × 10^50 atoms on Earth
@@ -291,59 +292,59 @@ class PasswordAnalyzer:
         # Apply the trillion threshold
         if combinations > 1_000_000_000_000:  # More than 1 trillion combinations
             if combinations < grains_of_sand:
-                return f"{combinations/1_000_000_000_000:.1f} trillion"
+                return f"{combinations/1_000_000_000_000:.1f} bilionů"
             elif combinations < grains_of_sand * 10:
                 sand_ratio = combinations / grains_of_sand
-                return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion (🏖️ {sand_ratio:.1f}x more than grains of sand on Earth)"
+                return f"{combinations/1_000_000_000_000_000_000:.1f} trilionů (🏖️ {sand_ratio:.1f}x více než zrnek písku na Zemi)"
             elif combinations < atoms_on_earth:
                 sand_ratio = combinations / grains_of_sand
                 if sand_ratio < 1000:
-                    return f"{combinations/1_000_000_000_000_000_000:.1f} quintillion (🏖️ {sand_ratio:.0f}x more than grains of sand on Earth)"
+                    return f"{combinations/1_000_000_000_000_000_000:.1f} trilionů (🏖️ {sand_ratio:.0f}x více než zrnek písku na Zemi)"
                 elif sand_ratio < 1000000:
-                    return f"Huge number (🏖️ {sand_ratio/1000:.0f} thousand times more than grains of sand on Earth)"
+                    return f"Obrovské číslo (🏖️ {sand_ratio/1000:.0f} tisíc krát více než zrnek písku na Zemi)"
                 else:
-                    return f"Huge number (🏖️ {sand_ratio/1000000:.0f} million times more than grains of sand on Earth)"
+                    return f"Obrovské číslo (🏖️ {sand_ratio/1000000:.0f} milionů krát více než zrnek písku na Zemi)"
             elif combinations < atoms_in_sun:
                 earth_ratio = combinations / atoms_on_earth
                 if earth_ratio < 1000:
-                    return f"Astronomical number (🌍 {earth_ratio:.1f}x more than atoms on Earth)"
+                    return f"Astronomické číslo (🌍 {earth_ratio:.1f}x více než atomů na Zemi)"
                 else:
-                    return f"Astronomical number (🌍 {earth_ratio/1000:.0f} thousand times more than atoms on Earth)"
+                    return f"Astronomické číslo (🌍 {earth_ratio/1000:.0f} tisíc krát více než atomů na Zemi)"
             elif combinations < atoms_in_solar_system * 10:
                 sun_ratio = combinations / atoms_in_sun
-                return f"Cosmic number (☀️ {sun_ratio:.1f}x more than atoms in the Sun)"
+                return f"Kosmické číslo (☀️ {sun_ratio:.1f}x více než atomů ve Slunci)"
             elif combinations < atoms_in_milky_way:
                 solar_ratio = combinations / atoms_in_solar_system
                 if solar_ratio < 1000:
-                    return f"Galactic number (🌌 {solar_ratio:.0f}x more than atoms in our Solar System)"
+                    return f"Galaktické číslo (🌌 {solar_ratio:.0f}x více než atomů v naší Sluneční soustavě)"
                 elif solar_ratio < 1000000:
-                    return f"Galactic number (🌌 {solar_ratio/1000:.0f} thousand times more than atoms in our Solar System)"
+                    return f"Galaktické číslo (🌌 {solar_ratio/1000:.0f} tisíc krát více než atomů v naší Sluneční soustavě)"
                 else:
-                    return f"Galactic number (🌌 {solar_ratio/1000000:.0f} million times more than atoms in our Solar System)"
+                    return f"Galaktické číslo (🌌 {solar_ratio/1000000:.0f} milionů krát více než atomů v naší Sluneční soustavě)"
             elif combinations < atoms_in_universe:
                 milky_ratio = combinations / atoms_in_milky_way
                 if milky_ratio < 1000:
-                    return f"Universal number (🌌 {milky_ratio:.0f}x more than atoms in the Milky Way)"
+                    return f"Univerzální číslo (🌌 {milky_ratio:.0f}x více než atomů v Mléčné dráze)"
                 elif milky_ratio < 1000000:
-                    return f"Universal number (🌌 {milky_ratio/1000:.0f} thousand times more than atoms in the Milky Way)"
+                    return f"Univerzální číslo (🌌 {milky_ratio/1000:.0f} tisíc krát více než atomů v Mléčné dráze)"
                 else:
-                    return f"Universal number (🌌 {milky_ratio/1000000:.0f} million times more than atoms in the Milky Way)"
+                    return f"Univerzální číslo (🌌 {milky_ratio/1000000:.0f} milionů krát více než atomů v Mléčné dráze)"
             else:
                 universe_ratio = combinations / atoms_in_universe
                 if universe_ratio < 1000:
-                    return f"Beyond universal (🌌 {universe_ratio:.0f}x more than atoms in the observable universe)"
+                    return f"Za hranicemi vesmíru (🌌 {universe_ratio:.0f}x více než atomů v pozorovatelném vesmíru)"
                 else:
-                    return f"Beyond universal (🌌 {universe_ratio/1000:.0f} thousand times more than atoms in the observable universe)"
+                    return f"Za hranicemi vesmíru (🌌 {universe_ratio/1000:.0f} tisíc krát více než atomů v pozorovatelném vesmíru)"
         else:
             # Normal scale for under 1 trillion combinations
             if combinations < 1_000:
                 return str(int(combinations))
             elif combinations < 1_000_000:
-                return f"{combinations/1_000:.1f} thousand"
+                return f"{combinations/1_000:.1f} tisíc"
             elif combinations < 1_000_000_000:
-                return f"{combinations/1_000_000:.1f} million"
+                return f"{combinations/1_000_000:.1f} milionů"
             else:
-                return f"{combinations/1_000_000_000:.1f} billion"
+                return f"{combinations/1_000_000_000:.1f} miliard"
 
 # Initialize the password analyzer
 analyzer = PasswordAnalyzer()
@@ -358,13 +359,13 @@ def analyze_password():
     password = data.get('password', '')
     
     if not password:
-        return jsonify({"error": "Password is required"}), 400
+        return jsonify({"error": "Heslo je povinné"}), 400
     
     try:
         analysis = analyzer.analyze_password(password)
         return jsonify(analysis)
     except Exception as e:
-        return jsonify({"error": f"Analysis failed: {str(e)}"}), 500
+        return jsonify({"error": f"Analýza selhala: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
